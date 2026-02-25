@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Bus Arrival Time Prediction System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1> Smart Bus Arrival Time Prediction</h1>
+            <p class="subtitle">WHERE IS MY BUS🚌?</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Left Section - Input Form -->
+            <div class="form-section">
+                <h2>Enter Bus & Destination Details</h2>
+                
+                <form id="predictionForm">
+                    <!-- Bus Number Selection -->
+                    <div class="form-group">
+                        <label for="busNumber">Bus Number</label>
+                        <select id="busNumber" name="busNumber" required>
+                            <option value="">-- Select Bus Number --</option>
+                            <option value="BUS001">BUS001</option>
+                            <option value="BUS002">BUS002</option>
+                            <option value="BUS003">BUS003</option>
+                            <option value="BUS004">BUS004</option>
+                            <option value="BUS005">BUS005</option>
+                            <option value="BUS006">BUS006</option>
+                            <option value="BUS007">BUS007</option>
+                            <option value="BUS008">BUS008</option>
+                        </select>
+                    </div>
+
+                    <!-- Destination Selection -->
+                    <div class="form-group">
+                        <label for="destination">Destination</label>
+                        <select id="destination" name="destination" required>
+                            <option value="">-- Select Destination --</option>
+                            <option value="Nagercoil">Nagercoil</option>
+                            <option value="Kanyakumari">Kanyakumari</option>
+                            <option value="Marthandam">Marthandam</option>
+                            <option value="Colachel">Colachel</option>
+                            <option value="Thuckalay">Thuckalay</option>
+                            <option value="Kulasekaram">Kulasekaram</option>
+                            <option value="Padmanabhapuram">Padmanabhapuram</option>
+                            <option value="Suchindram">Suchindram</option>
+                        </select>
+                    </div>
+
+                    <!-- Day of Week Selection -->
+                    <div class="form-group">
+                        <label for="dayOfWeek">Day of Week</label>
+                        <select id="dayOfWeek" name="dayOfWeek" required>
+                            <option value="">-- Select Day --</option>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                            <option value="Saturday">Saturday</option>
+                            <option value="Sunday">Sunday</option>
+                        </select>
+                    </div>
+
+                    <!-- Time Period Selection -->
+                    <div class="form-group">
+                        <label for="timePeriod">Time (24-hour format):</label>
+                        <input type="time" id="timePeriod" required>
+                    </div>
+
+                    <!-- Stop Sequence Selection -->
+                    <div class="form-group">
+                        <label for="stopSequence">Stop Sequence (1-7)</label>
+                        <select id="stopSequence" name="stopSequence" required>
+                            <option value="">-- Select Stop Number --</option>
+                            <option value="1">1st Stop</option>
+                            <option value="2">2nd Stop</option>
+                            <option value="3">3rd Stop</option>
+                            <option value="4">4th Stop</option>
+                            <option value="5">5th Stop</option>
+                            <option value="6">6th Stop</option>
+                            <option value="7">7th Stop</option>
+                        </select>
+                        <small>Select which stop in the route </small>
+                    </div>
+
+                    <!-- Predict Button -->
+                    <button type="submit" class="btn-predict">
+                        <span>🚌 Check Arrival Time</span>
+                    </button>
+                </form>
+
+                <!-- Loading Indicator -->
+                <div id="loading" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Processing your prediction...</p>
+                </div>
+
+                <!-- Error Message -->
+                <div id="errorMessage" class="message error" style="display: none;"></div>
+            </div>
+
+            <!-- Right Section - Result Display -->
+            <div class="result-section">
+                <h2>Prediction Result</h2>
+                
+                <!-- Result Card -->
+                <div id="resultCard" class="result-card" style="display: none;">
+                    <div class="result-item">
+                        <h3>Predicted Arrival Time</h3>
+                        <div class="arrival-time">
+                            <span id="arrivalTimeValue" class="time-value">--</span>
+                            <span class="time-unit">minutes</span>
+                        </div>
+                    </div>
+
+                    <div class="result-details">
+                        <div class="detail-item">
+                            <label>Bus Number:</label>
+                            <span id="resultBus">--</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Destination:</label>
+                            <span id="resultDestination">--</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Day:</label>
+                            <span id="resultDay">--</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Time Period:</label>
+                            <span id="resultTime">--</span>
+                        </div>
+                        <div class="detail-item">
+                            <label>Stop Number:</label>
+                            <span id="resultStop">--</span>
+                        </div>
+                    </div>
+
+                    <div class="prediction-message">
+                        <p id="predictionMessage">--</p>
+                    </div>
+
+                    <button type="button" class="btn-clear" onclick="clearResults()">
+                        🔄 Make Another Prediction
+                    </button>
+                </div>
+
+                <!-- Empty State -->
+                <div id="emptyState" class="empty-state">
+                    <div class="empty-icon">📍</div>
+                    <p>Select bus number, destination, day, time period, and stop number to see the predicted arrival time.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Information Section -->
+    <section class="info-section">
+        <div class="container">
+            <h2>About This System</h2>
+            <div class="info-grid">
+                <div class="info-card">
+                    <h3>🤖 Technology</h3>
+                    <p>Linear Regression Machine Learning Model trained on bus route data from Kanyakumari district.</p>
+                </div>
+                <div class="info-card">
+                    <h3>📊 Input Parameters</h3>
+                    <p>Predictions based on: Bus Number, Destination, Day of Week, Time Period, and Stop Sequence.</p>
+                </div>
+                <div class="info-card">
+                    <h3>⚡ 8 Buses Covered</h3>
+                    <p>8 different buses operating across 8 destinations in Kanyakumari district, Tamil Nadu.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Smart Bus Arrival Time Prediction System | Mini Project - AI & ML |Developed by MIND MATRIX</p>
+            <P>ABILASH R V | ELGIN E H | GOPIKA V | KARTHIKA M</P>
+            <p>Tamil Nadu Transportation System Analysis</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
